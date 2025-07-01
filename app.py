@@ -1,10 +1,17 @@
+import os
 import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
-model = tf.keras.models.load_model('Efficient_classify.keras')
+FILE_ID = "1aATB4I4Qn4GWtsGArtxKNJ60eKquY9cN"
+
+# Install gdown & download the model
+os.system("pip install gdown")
+os.system(f"gdown --id {FILE_ID} -O EfficientV2B2_eWaste.keras")
+
+model = tf.keras.models.load_model('EfficientV2B2_eWaste.keras')
 
 class_names = [
     'Battery', 'Keyboard', 'Microwave', 'Mobile',
@@ -29,17 +36,17 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
-    # Open and display the uploaded image
+    # Show uploaded image
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Preprocess the image to match model input size
-    img = image.resize((260, 260))  # EfficientNetV2B2 input size
+    # Preprocess image for model
+    img = image.resize((260, 260))
     img_array = np.array(img, dtype=np.float32)
     img_array = preprocess_input(img_array)
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict using the model
+    # Predict
     prediction = model.predict(img_array)
     index = np.argmax(prediction)
     confidence = prediction[0][index]
@@ -48,7 +55,7 @@ if uploaded_file is not None:
     st.success(f"✅ **Prediction:** {class_names[index]}")
     st.info(f"📊 **Confidence:** {confidence:.2%}")
 
-    # Show Top 3 predictions as a bar chart
+    # Top 3 predictions chart
     st.subheader("Top 3 Predictions")
     top3_indices = np.argsort(prediction[0])[::-1][:3]
     top3_labels = [class_names[i] for i in top3_indices]
@@ -56,6 +63,6 @@ if uploaded_file is not None:
     st.bar_chart({
         "Confidence": top3_scores
     })
-
+    
 st.markdown("---")
-st.caption("🔬 Made with Streamlit & TensorFlow | 🌍 E-Waste Classification Project | 📧 Your Email Here")
+st.caption("🔬 Made with Streamlit & TensorFlow | 🌍 E-Waste Classification Project | 📧 your-email@example.com")
