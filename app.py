@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
-model = tf.keras.models.load_model('EfficientV2B2_eWaste.keras')
+model = tf.keras.models.load_model('Efficient_classify.keras')
 
 class_names = [
     'Battery', 'Keyboard', 'Microwave', 'Mobile',
