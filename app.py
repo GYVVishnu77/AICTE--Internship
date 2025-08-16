@@ -6,36 +6,18 @@ from PIL import Image
 import gdown
 
 # =============================
-# 1. Download Model Weights
+# 1. Download Model
 # =============================
-FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # Your Google Drive file ID
-OUTPUT = "EfficientV2B2_weights.h5"
+FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # Replace with your .keras file's ID
+OUTPUT = "Efficient_classify.keras"
 
 if not os.path.exists(OUTPUT):
     gdown.download(id=FILE_ID, output=OUTPUT, quiet=False)
 
 # =============================
-# 2. Rebuild Model Architecture
+# 2. Load Trained Model
 # =============================
-base_model = tf.keras.applications.EfficientNetV2B2(
-    input_shape=(260,260, 3),
-    include_top=False,
-    weights=None
-)
-base_model.trainable = True
-for layer in base_model.layers[:100]:
-    layer.trainable = False
-
-model = tf.keras.Sequential([
-    tf.keras.layers.Input(shape=(260,260, 3)),
-    base_model,
-    tf.keras.layers.GlobalAveragePooling2D(),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(10, activation="softmax")
-])
-
-# Load weights safely
-model.load_weights(OUTPUT)
+model = tf.keras.models.load_model(OUTPUT)
 
 # =============================
 # 3. Class Names
@@ -78,8 +60,8 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Preprocess image for model
-    img = image.resize((128, 128))
+    # Preprocess image for model (resize to 260x260 since you trained on that)
+    img = image.resize((260, 260))
     img_array = np.array(img, dtype=np.float32) / 255.0  # normalize
     img_array = np.expand_dims(img_array, axis=0)
 
@@ -111,5 +93,3 @@ if uploaded_file is not None:
 # =============================
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** | 🌍 E-Waste Classification Project | ✉️ your-email@example.com")
-
-
