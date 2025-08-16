@@ -3,21 +3,51 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-from tensorflow.keras.applications.efficientnet import preprocess_input
+import gdown
 
-FILE_ID = "1aATB4I4Qn4GWtsGArtxKNJ60eKquY9cN"
+# =============================
+# 1. Download Model Weights
+# =============================
+FILE_ID = "1aATB4I4Qn4GWtsGArtxKNJ60eKquY9cN"  # Your Google Drive file ID
+OUTPUT = "EfficientV2B2_weights.h5"
 
-# Install gdown & download the model
-os.system("pip install gdown")
-os.system(f"gdown --id {FILE_ID} -O EfficientV2B2_eWaste.keras")
+if not os.path.exists(OUTPUT):
+    gdown.download(id=FILE_ID, output=OUTPUT, quiet=False)
 
-model = tf.keras.models.load_model('EfficientV2B2_eWaste.keras')
+# =============================
+# 2. Rebuild Model Architecture
+# =============================
+base_model = tf.keras.applications.EfficientNetV2B2(
+    input_shape=(128, 128, 3),
+    include_top=False,
+    weights=None
+)
+base_model.trainable = True
+for layer in base_model.layers[:100]:
+    layer.trainable = False
 
+model = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(128, 128, 3)),
+    base_model,
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(10, activation="softmax")
+])
+
+# Load weights safely
+model.load_weights(OUTPUT)
+
+# =============================
+# 3. Class Names
+# =============================
 class_names = [
-    'Battery', 'Keyboard', 'Microwave', 'Mobile',
-    'Mouse', 'PCB', 'Player', 'Printer', 'Television', 'Washing Machine'
+    "Battery", "Keyboard", "Microwave", "Mobile",
+    "Mouse", "PCB", "Player", "Printer", "Television", "Washing Machine"
 ]
 
+# =============================
+# 4. Streamlit Page Setup
+# =============================
 st.set_page_config(
     page_title="♻️ E-Waste Classifier",
     page_icon="♻️",
@@ -26,24 +56,31 @@ st.set_page_config(
 
 st.title("♻️ E-Waste Image Classifier")
 st.markdown(
-    "Upload an image of an e-waste item (like a mobile phone, PCB, or battery). "
-    "Our AI model will predict its category to help sort it for recycling."
+    """
+    Upload an image of an e-waste item (like a **mobile phone**, **PCB**, or **battery**).  
+    Our AI model will automatically **predict its category** to help sort it for recycling.  
+    """
 )
 
+# =============================
+# 5. File Uploader
+# =============================
 uploaded_file = st.file_uploader(
-    "Choose an e-waste image...",
+    "📤 Upload an e-waste image...",
     type=["jpg", "jpeg", "png"]
 )
 
+# =============================
+# 6. Prediction Logic
+# =============================
 if uploaded_file is not None:
     # Show uploaded image
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
     # Preprocess image for model
-    img = image.resize((260, 260))
-    img_array = np.array(img, dtype=np.float32)
-    img_array = preprocess_input(img_array)
+    img = image.resize((128, 128))
+    img_array = np.array(img, dtype=np.float32) / 255.0  # normalize
     img_array = np.expand_dims(img_array, axis=0)
 
     # Predict
@@ -55,14 +92,22 @@ if uploaded_file is not None:
     st.success(f"✅ **Prediction:** {class_names[index]}")
     st.info(f"📊 **Confidence:** {confidence:.2%}")
 
-    # Top 3 predictions chart
-    st.subheader("Top 3 Predictions")
+    # =============================
+    # 7. Top-3 Predictions
+    # =============================
+    st.subheader("🔎 Top 3 Predictions")
     top3_indices = np.argsort(prediction[0])[::-1][:3]
     top3_labels = [class_names[i] for i in top3_indices]
     top3_scores = [prediction[0][i] for i in top3_indices]
-    st.bar_chart({
-        "Confidence": top3_scores
-    })
-    
+
+    # Display top-3 nicely
+    for label, score in zip(top3_labels, top3_scores):
+        st.write(f"- **{label}** → {score:.2%}")
+
+    st.progress(float(confidence))  # fun confidence bar
+
+# =============================
+# 8. Footer
+# =============================
 st.markdown("---")
-st.caption("🔬 Made with Streamlit & TensorFlow | 🌍 E-Waste Classification Project | 📧 your-email@example.com")
+st.caption("🔬 Built with **Streamlit** & **TensorFlow** | 🌍 E-Waste Classification Project | ✉️ your-email@example.com")
