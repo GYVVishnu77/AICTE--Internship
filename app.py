@@ -146,3 +146,4 @@ if uploaded:
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** · 🌍 E-Waste Classification Project · ✉️ your-email@example.com")
 
+
