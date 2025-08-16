@@ -9,7 +9,7 @@ import gdown
 # -----------------------------
 # 0) CONFIG
 # -----------------------------
-KERAS_FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # <-- YOUR .keras file ID
+KERAS_FILE_ID = "1hbCL5g_4HUUQe-jJVCTKV0pFLFLUXwHS"  # <-- YOUR .keras file ID
 KERAS_LOCAL   = "eff_eWaste_model.keras"
 
 # Optional fallback weights (only used if .keras fails to load)
@@ -145,3 +145,4 @@ if uploaded:
 
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** · 🌍 E-Waste Classification Project · ✉️ your-email@example.com")
+
