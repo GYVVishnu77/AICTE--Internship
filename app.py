@@ -8,7 +8,7 @@ import gdown
 # =============================
 # 1. Download Model Weights
 # =============================
-FILE_ID = "1aATB4I4Qn4GWtsGArtxKNJ60eKquY9cN"  # Your Google Drive file ID
+FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # Your Google Drive file ID
 OUTPUT = "EfficientV2B2_weights.h5"
 
 if not os.path.exists(OUTPUT):
@@ -111,4 +111,5 @@ if uploaded_file is not None:
 # =============================
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** | 🌍 E-Waste Classification Project | ✉️ your-email@example.com")
+
 
