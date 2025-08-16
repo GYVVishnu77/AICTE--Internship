@@ -18,7 +18,7 @@ if not os.path.exists(OUTPUT):
 # 2. Rebuild Model Architecture
 # =============================
 base_model = tf.keras.applications.EfficientNetV2B2(
-    input_shape=(128, 128, 3),
+    input_shape=(260,260, 3),
     include_top=False,
     weights=None
 )
@@ -27,7 +27,7 @@ for layer in base_model.layers[:100]:
     layer.trainable = False
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Input(shape=(128, 128, 3)),
+    tf.keras.layers.Input(shape=(260,260, 3)),
     base_model,
     tf.keras.layers.GlobalAveragePooling2D(),
     tf.keras.layers.Dropout(0.2),
@@ -111,3 +111,4 @@ if uploaded_file is not None:
 # =============================
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** | 🌍 E-Waste Classification Project | ✉️ your-email@example.com")
+
