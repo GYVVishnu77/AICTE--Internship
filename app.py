@@ -8,8 +8,8 @@ import gdown
 # -----------------------------
 # 0) CONFIG
 # -----------------------------
-H5_FILE_ID = "1ftmQBZ4fl9MPZxximg49xvXfW7d8qbtP"   # Google Drive File ID of Efficient_classify.h5
-H5_LOCAL   = "Efficient_classify.h5"
+H5_FILE_ID = "1rLPmVSrSlMCp8xr6-e4BHO0X8X-Zmvb8"   # Google Drive File ID of Efficient_classify.h5
+H5_LOCAL   = "Efficient_classify_fixed.h5"
 
 CLASS_NAMES = [
     "Battery", "Keyboard", "Microwave", "Mobile",
@@ -91,3 +91,4 @@ if uploaded:
 
 st.markdown("---")
 st.caption("🔬 Built with **Streamlit** & **TensorFlow** · 🌍 E-Waste Classification Project · ✉️ your-email@example.com")
+
