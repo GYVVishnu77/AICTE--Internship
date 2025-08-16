@@ -8,7 +8,7 @@ import gdown
 # =============================
 # 1. Download Model
 # =============================
-FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # Replace with your .keras file's ID
+FILE_ID = "119PEoRPVNpwGYUWaBZEahkwrsyWhwfYH"  # Replace with your Google Drive file ID
 OUTPUT = "Efficient_classify.keras"
 
 if not os.path.exists(OUTPUT):
@@ -17,6 +17,7 @@ if not os.path.exists(OUTPUT):
 # =============================
 # 2. Load Trained Model
 # =============================
+# Directly load the model (no need to define input shape again)
 model = tf.keras.models.load_model(OUTPUT)
 
 # =============================
@@ -60,9 +61,9 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
-    # Preprocess image for model (resize to 260x260 since you trained on that)
+    # Preprocess image (resize to 260x260, normalize)
     img = image.resize((260, 260))
-    img_array = np.array(img, dtype=np.float32) / 255.0  # normalize
+    img_array = np.array(img, dtype=np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
     # Predict
@@ -82,11 +83,10 @@ if uploaded_file is not None:
     top3_labels = [class_names[i] for i in top3_indices]
     top3_scores = [prediction[0][i] for i in top3_indices]
 
-    # Display top-3 nicely
     for label, score in zip(top3_labels, top3_scores):
         st.write(f"- **{label}** → {score:.2%}")
 
-    st.progress(float(confidence))  # fun confidence bar
+    st.progress(float(confidence))
 
 # =============================
 # 8. Footer
