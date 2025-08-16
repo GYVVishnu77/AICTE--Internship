@@ -1,9 +1,6 @@
-streamlit
+python_version == "3.10"
 tensorflow==2.19.0
-numpy
-pillow
-gdown
-
-
-
-
+streamlit==1.48.1
+gdown==5.2.0
+pillow>=9.5
+numpy<2.1
